@@ -3,6 +3,27 @@ const inputManager = _cc.inputManager;
 const renderer = cc.renderer;
 const game = cc.game;
 const dynamicAtlasManager = cc.dynamicAtlasManager;
+let _sharedLabelCanvas = document.createElement('canvas');
+let _sharedLabelCanvasCtx = _sharedLabelCanvas.getContext('2d');
+let data = {
+    canvas: _sharedLabelCanvas,
+    context: _sharedLabelCanvasCtx,
+};
+
+function adaptCanvasPool () {
+    if (cc && cc.Label) {
+        const Label = cc.Label;
+        Object.assign (Label._canvasPool, {
+            get () {
+                return data;
+            },
+    
+            put () {
+                // do nothing
+            }
+        });
+    }
+}
 
 Object.assign(game, {
     setFrameRate (frameRate) {
@@ -69,6 +90,8 @@ Object.assign(game, {
         }
 
         this._rendererInitialized = true;
+
+        adaptCanvasPool();
     },
 
     _initEvents () {
