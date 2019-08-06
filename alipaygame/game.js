@@ -9,7 +9,7 @@ require(window._CCSettings.debug ? './cocos2d-js' : './cocos2d-js-min');
 require('./adapter/engine/index');
 
 // Adjust devicePixelRatio
-cc.view._maxPixelRatio = 3;
+cc.view._maxPixelRatio = 4;
 
 myDownloader.REMOTE_SERVER_ROOT = "";
 myDownloader.SUBCONTEXT_ROOT = "";
