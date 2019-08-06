@@ -1337,11 +1337,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var _taskMap = new WeakMap();
 
-var CONNECTING = 0;
-var OPEN = 1;
-var CLOSING = 2;
-var CLOSED = 3;
-
 var WebSocket = function () {
     function WebSocket(url) {
         var _this = this;
@@ -1349,6 +1344,11 @@ var WebSocket = function () {
         var protocols = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
         _classCallCheck(this, WebSocket);
+
+        this.OPEN = WebSocket.OPEN;
+        this.CONNECTING = WebSocket.CONNECTING;
+        this.CLOSING = WebSocket.CLOSING;
+        this.CLOSED = WebSocket.CLOSED;
 
         this.binaryType = '';
         this.bufferedAmount = 0;
@@ -1360,14 +1360,14 @@ var WebSocket = function () {
         this.onopen = null;
 
         this.protocol = '';
-        this.readyState = CLOSED;
+        this.readyState = this.CLOSED;
 
         if (typeof url !== 'string' || !/(^ws:\/\/)|(^wss:\/\/)/.test(url)) {
             throw new TypeError('Failed to construct \'WebSocket\': The URL=\'' + url + '\' is invalid');
         }
 
         this.url = url;
-        this.readyState = CONNECTING;
+        this.readyState = this.CONNECTING;
 
         var task = my.connectSocket({
             url: url,
@@ -1377,7 +1377,7 @@ var WebSocket = function () {
         _taskMap.set(this, task);
 
         task.onOpen(function (res) {
-            _this.readyState = OPEN;
+            _this.readyState = _this.OPEN;
             if (typeof _this.onopen === 'function') {
                 _this.onopen(res);
             }
@@ -1391,15 +1391,12 @@ var WebSocket = function () {
 
         task.onMessage(function (res) {
             if (typeof _this.onmessage === 'function') {
-                if (res.isBuffer) {
-                    res = atob(res);
-                }
                 _this.onmessage(res);
             }
         });
 
         task.onClose(function (res) {
-            _this.readyState = CLOSED;
+            _this.readyState = _this.CLOSED;
             if (typeof _this.onclose === 'function') {
                 _this.onclose(res);
             }
@@ -1424,21 +1421,19 @@ var WebSocket = function () {
     }, {
         key: 'close',
         value: function close() {
-            this.readyState = CLOSING;
+            this.readyState = this.CLOSING;
             var task = _taskMap.get(this);
             task.close();
         }
     }]);
 
-    // define static property
-    WebSocket.CONNECTING = CONNECTING;
-    WebSocket.OPEN = OPEN;
-    WebSocket.CLOSING = CLOSING;
-    WebSocket.CLOSED = CLOSED;
-
     return WebSocket;
 }();
 
+WebSocket.CONNECTING = 0;
+WebSocket.OPEN = 1;
+WebSocket.CLOSING = 2;
+WebSocket.CLOSED = 3;
 exports.default = WebSocket;
 
 /***/ }),
@@ -1626,10 +1621,6 @@ var XMLHttpRequest = function (_EventTarget) {
                 status = res.status,
                 headers = res.headers;
 
-            if (typeof data === 'string' && data.includes('超时')) {
-                _triggerEvent.call(_this2, 'timeout');
-                return;
-            }
 
             if (typeof data !== 'string' && !(data instanceof ArrayBuffer)) {
               try {
@@ -1666,6 +1657,9 @@ var XMLHttpRequest = function (_EventTarget) {
           fail: function fail(res) {
             var errorMessage = res.errorMessage;
 
+            if (res.data.includes("超时")) {
+              _triggerEvent.call(_this2, 'timeout');
+            }
 
             _triggerEvent.call(_this2, 'error', errorMessage);
             _triggerEvent.call(_this2, 'loadend');
@@ -2095,7 +2089,6 @@ Object.defineProperty(exports, "__esModule", {
 var _noop = __webpack_require__(/*! ./utils/noop */ "./src/utils/noop.js");
 
 var systemInfo = my.getSystemInfoSync();
-console.log("navigator init");
 
 var _ref = systemInfo || {},
     system = _ref.system,
