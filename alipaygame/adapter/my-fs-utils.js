@@ -115,7 +115,11 @@ function writeFileSync (path, data, encoding) {
     var result = checkFsValid();
     if (result) return result;
     try {
-        fs.writeFileSync(path, data, encoding);
+        fs.writeFileSync({
+            filePath: path,
+            data: data,
+            encoding: encoding,
+        });
         return null;
     }
     catch (e) {
@@ -184,7 +188,10 @@ function makeDirSync (path, recursive) {
     var result = checkFsValid();
     if (result) return result;
     try {
-        fs.mkdirSync(path, recursive);
+        fs.mkdirSync({
+            dirPath: path,
+            recursive: recursive,
+        });
         return null;
     }
     catch (e) {
