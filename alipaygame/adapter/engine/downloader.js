@@ -9,6 +9,25 @@ function downloadScript (item, callback, isAsync) {
     callback(null, item.url);
 }
 
+function loadImage(item) {
+    var loadByDeserializedAsset = item._owner instanceof cc.Asset;
+    if (loadByDeserializedAsset) {
+        // already has cc.Asset
+        return null;
+    }
+
+    var image = item.content;
+
+    // load cc.Texture2D
+    var rawUrl = item.rawUrl;
+    var tex = item.texture || new cc.Texture2D();
+    tex._uuid = item.uuid;
+    tex.url = rawUrl;
+    tex._setRawAsset(rawUrl, false);
+    tex._nativeAsset = image;
+    return tex;
+}
+
 function loadFont (item) {
     // var url = item.url;
     // var fontFamily = my.loadFont(url);
@@ -23,6 +42,17 @@ cc.loader.downloader.addHandlers({
 });
 
 cc.loader.loader.addHandlers({
+    // Images
+    png: loadImage,
+    jpg: loadImage,
+    bmp: loadImage,
+    jpeg: loadImage,
+    gif: loadImage,
+    ico: loadImage,
+    tiff: loadImage,
+    webp: loadImage,
+    image: loadImage,
+
     // Font
     font: loadFont,
     eot: loadFont,
