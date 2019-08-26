@@ -59,4 +59,19 @@ Object.assign(Audio.prototype, {
             this._element = null;
         }
     },
+
+    _bindEnded (callback) {
+        callback = callback || this._onended;
+        let elem = this._element;
+        if (elem) {
+          elem.onEnded && elem.onEnded(callback);
+        }
+    },
+
+    _unbindEnded () {
+        let elem = this._element;
+        if (elem) {
+          elem.offEnded && elem.offEnded();
+        }
+    },
 });
