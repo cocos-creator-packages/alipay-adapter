@@ -1,6 +1,6 @@
 // cc.AuidioEngine
 if (cc && cc.audioEngine) {
-    cc.audioEngine._maxAudioInstance = 10;
+    cc.audioEngine._maxAudioInstance = 6;
 }
 
 // cc.Macro
